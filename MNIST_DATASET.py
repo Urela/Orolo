@@ -32,14 +32,14 @@ def normalize(x):
 
 def fetch_mnist():
     print(" collecting data")
-    X_train = fetch("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28, 28))
+    X_train = fetch("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28*28)).astype(np.float32)
     Y_train = fetch("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz")[8:]
-    X_test = fetch("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28, 28))
+    X_test = fetch("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28*28)).astype(np.float32)
     Y_test = fetch("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz")[8:]
 
     ## pre processing data
-    X_train = normalize(X_train) 
-    Y_train = one_hot_encoding(Y_train)
+    #X_train = normalize(X_train) 
+    #Y_train = one_hot_encoding(Y_train)
 
     #X_test = normalize(X_test)
     #Y_test = one_hot_encoding(Y_test)
