@@ -9,13 +9,13 @@ from MNIST_DATASET import fetch_mnist
 x_train, y_train, x_test, y_test = fetch_mnist()
 # ********************************************************************
 class Model:
-    def __init__(self):
-        self.fc1 = Tensor.uniform(784, 128)
-        self.fc2 = Tensor.uniform(128, 10)
-    def forward(self, x):
-        x = x.matmul(self.fc1).relu()
-        x = x.matmul(self.fc2).logsoftmax()
-        return x
+  def __init__(self):
+    self.fc1 = Tensor.uniform(784, 128)
+    self.fc2 = Tensor.uniform(128, 10)
+  def forward(self, x):
+    x = x.matmul(self.fc1).relu()
+    x = x.matmul(self.fc2).logsoftmax()
+    return x
 
 model = Model()
 optim = optim.SGD([model.fc1, model.fc2], lr=0.001)
@@ -23,27 +23,26 @@ optim = optim.SGD([model.fc1, model.fc2], lr=0.001)
 # ********************************************************************
 
 def train(model, optim, steps, batch_size, losses:list, accuracies:list):
-    for epoch in tqdm(range(steps)):
-        samp = np.random.randint(0, x_train.shape[0], size=(batch_size))
-        x, y = Tensor(x_train[samp].reshape((-1, 28*28))), Tensor(y_train[samp].reshape(-1,10))
+  for epoch in tqdm(range(steps)):
+    samp = np.random.randint(0, x_train.shape[0], size=(batch_size))
+    x, y = Tensor(x_train[samp]), y_train[samp]
 
-        out = model.forward(x)
-        loss = out.mul(y).mean() # NLL loss function
+    out = model.forward(x)
+    loss = out.mul(y).mean() # NLL loss function
 
-        optim.zero_grad()
-        loss.backward()
-        optim.step()
+    optim.zero_grad()
+    loss.backward()
+    optim.step()
+    losses.append(loss.numpy())
 
-        losses.append(loss.data)
-
-        pred = np.argmax(out.data, axis=1)
-        targ = np.argmax(y.data, axis=1)
-        accuracies.append( (pred == targ).mean() )
-    return losses, accuracies
+    pred = np.argmax(out.numpy(), axis=1)
+    targ = np.argmax(y, axis=1)
+    accuracies.append( (pred == targ).mean() )
+  return losses, accuracies
 
 losses, accuracies = train(model, optim, steps=1000, batch_size=128, losses=[], accuracies=[])
 # *************************** Evaluation ***************************  
-outputs = model.forward(Tensor(x_test.reshape(-1, 28*28)))
+outputs = model.forward(Tensor(x_test))
 outputs = np.argmax(outputs.numpy(), axis=1)
 accuracy = (y_test == outputs).mean()
 print(f"model accuracy {accuracy:.3f}")
